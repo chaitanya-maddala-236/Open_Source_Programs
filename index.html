@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Open Source Programs Database</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #7f8c8d;
+            margin-bottom: 30px;
+            font-size: 1.2em;
+        }
+
+        .download-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .download-btn {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .download-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        th {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 0.9em;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: top;
+            font-size: 0.9em;
+        }
+
+        tr:hover {
+            background: rgba(102, 126, 234, 0.05);
+        }
+
+        .status-open {
+            background: #27ae60;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-closed {
+            background: #e74c3c;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .status-upcoming {
+            background: #f39c12;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .apply-link {
+            background: #3498db;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            text-decoration: none;
+            font-size: 0.8em;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .apply-link:hover {
+            background: #2980b9;
+            transform: translateY(-1px);
+        }
+
+        .stipend-high {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .stipend-medium {
+            color: #f39c12;
+            font-weight: bold;
+        }
+
+        .stipend-low {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .notes {
+            background: #ecf0f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+
+        .notes h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .notes ul {
+            padding-left: 20px;
+        }
+
+        .notes li {
+            margin-bottom: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 2em;
+            }
+            
+            table {
+                font-size: 0.8em;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Open Source Programs Database 2025</h1>
+        <p class="subtitle">Complete guide with application links, timelines, and stipends</p>
+        
+        <div class="download-section">
+            <button class="download-btn" onclick="downloadExcel()">
+                📊 Download Excel File
+            </button>
+        </div>
+
+        <div class="table-container">
+            <table id="programsTable">
+                <thead>
+                    <tr>
+                        <th>Program</th>
+                        <th>Application Period</th>
+                        <th>Program Duration</th>
+                        <th>Stipend (USD)</th>
+                        <th>Status</th>
+                        <th>Apply Link</th>
+                        <th>Notes</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Google Summer of Code (GSoC)</strong></td>
+                        <td>March 24 - April 8, 2025</td>
+                        <td>May 27 - Aug 19, 2025</td>
+                        <td><span class="stipend-medium">$750 - $3,000</span><br><small>(India rates)</small></td>
+                        <td><span class="status-closed">Closed</span></td>
+                        <td><a href="https://summerofcode.withgoogle.com/" class="apply-link" target="_blank">GSoC Portal</a></td>
+                        <td>Applications closed for 2025. Prepare for 2026</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Google Season of Docs (GSoD)</strong></td>
+                        <td>March - April</td>
+                        <td>May - November</td>
+                        <td><span class="stipend-high">$5,000 - $15,000</span></td>
+                        <td><span class="status-upcoming">2026</span></td>
+                        <td><a href="https://developers.google.com/season-of-docs" class="apply-link" target="_blank">GSoD Portal</a></td>
+                        <td>Technical writing focused</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MLH Fellowship</strong></td>
+                        <td>Open Now</td>
+                        <td>Sept 15 - Dec 6, 2025</td>
+                        <td><span class="stipend-high">$5,000</span></td>
+                        <td><span class="status-open">Open</span></td>
+                        <td><a href="https://fellowship.mlh.io/" class="apply-link" target="_blank">Apply Now</a></td>
+                        <td>Fall 2025 cohort accepting applications</td>
+                    </tr>
+                    <tr>
+                        <td><strong>MLH Prep Program</strong></td>
+                        <td>Rolling</td>
+                        <td>3 weeks</td>
+                        <td><span class="stipend-low">Free</span></td>
+                        <td><span class="status-open">Open</span></td>
+                        <td><a href="https://fellowship.mlh.io/programs/prep" class="apply-link" target="_blank">Apply Now</a></td>
+                        <td>Great preparation for Fellowship</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Outreachy</strong></td>
+                        <td>Feb 6 - Mar 14, 2025</td>
+                        <td>June 2 - Aug 29, 2025</td>
+                        <td><span class="stipend-high">$7,000 + $500</span></td>
+                        <td><span class="status-closed">Running</span></td>
+                        <td><a href="https://www.outreachy.org/" class="apply-link" target="_blank">Outreachy</a></td>
+                        <td>Current internship running. Next: Dec 2025</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Hyperledger Foundation</strong></td>
+                        <td>Year-round</td>
+                        <td>3-6 months</td>
+                        <td><span class="stipend-medium">$3,000 - $6,000</span></td>
+                        <td><span class="status-open">Open</span></td>
+                        <td><a href="https://wiki.hyperledger.org/display/INTERN" class="apply-link" target="_blank">Apply Now</a></td>
+                        <td>Blockchain focused</td>
+                    </tr>
+                    <tr>
+                        <td><strong>LFX Mentorship</strong></td>
+                        <td>Jan-Feb, Apr-May, Aug-Sep</td>
+                        <td>12 weeks</td>
+                        <td><span class="stipend-high">$3,000 - $6,000</span></td>
+                        <td><span class="status-upcoming">Fall 2025</span></td>
+                        <td><a href="https://mentorship.lfx.linuxfoundation.org/" class="apply-link" target="_blank">LFX Portal</a></td>
+                        <td>3 cohorts per year</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Season of KDE</strong></td>
+                        <td>Dec - Jan</td>
+                        <td>Jan - April</td>
+                        <td><span class="stipend-medium">$1,000 - $3,000</span></td>
+                        <td><span class="status-upcoming">Dec 2025</span></td>
+                        <td><a href="https://season.kde.org/" class="apply-link" target="_blank">KDE Season</a></td>
+                        <td>KDE ecosystem projects</td>
+                    </tr>
+                    <tr>
+                        <td><strong>FOSSASIA Internship</strong></td>
+                        <td>Year-round</td>
+                        <td>2-6 months</td>
+                        <td><span class="stipend-low">$500 - $2,000</span></td>
+                        <td><span class="status-open">Open</span></td>
+                        <td><a href="https://fossasiataipei.github.io/fossasia-internship-program/" class="apply-link" target="_blank">Apply Now</a></td>
+                        <td>Some programs unpaid</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Summer of Haskell</strong></td>
+                        <td>Feb - March</td>
+                        <td>June - Sept</td>
+                        <td><span class="stipend-medium">$3,000 - $6,000</span></td>
+                        <td><span class="status-upcoming">2026</span></td>
+                        <td><a href="https://summer.haskell.org/" class="apply-link" target="_blank">Haskell Summer</a></td>
+                        <td>Haskell programming language</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Cross (OSRE)</strong></td>
+                        <td>Jan - March</td>
+                        <td>June - Sept</td>
+                        <td><span class="stipend-high">$6,000 - $8,000</span></td>
+                        <td><span class="status-upcoming">2026</span></td>
+                        <td><a href="https://ucsc-ospo.github.io/osre/" class="apply-link" target="_blank">OSRE Portal</a></td>
+                        <td>Research-focused</td>
+                    </tr>
+                    <tr>
+                        <td><strong>GitHub Octernships</strong></td>
+                        <td>Quarterly</td>
+                        <td>8-12 weeks</td>
+                        <td><span class="stipend-high">$5,000 - $10,000</span></td>
+                        <td><span class="status-open">Open</span></td>
+                        <td><a href="https://education.github.com/students/octernships" class="apply-link" target="_blank">Apply Now</a></td>
+                        <td>Rolling applications</td>
+                    </tr>
+                    <tr>
+                        <td><strong>X.Org Foundation</strong></td>
+                        <td>March - April</td>
+                        <td>May - August</td>
+                        <td><span class="stipend-high">$5,000</span></td>
+                        <td><span class="status-upcoming">2026</span></td>
+                        <td><a href="https://www.x.org/wiki/XorgEVoC/" class="apply-link" target="_blank">X.Org EVoC</a></td>
+                        <td>Graphics/display systems</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Microsoft RL Open Source Fest</strong></td>
+                        <td>Jan - Feb</td>
+                        <td>March - June</td>
+                        <td><span class="stipend-high">$10,000</span></td>
+                        <td><span class="status-upcoming">2026</span></td>
+                        <td><a href="https://www.microsoft.com/en-us/research/academic-program/rl-open-source-fest/" class="apply-link" target="_blank">MS RL Fest</a></td>
+                        <td>AI/RL focused, highest stipend</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="notes">
+            <h3>📋 Quick Action Guide</h3>
+            <ul>
+                <li><strong>Apply Now:</strong> MLH Fellowship, GitHub Octernships, Hyperledger, FOSSASIA</li>
+                <li><strong>Prepare for 2026:</strong> GSoC, Outreachy (Dec 2025), LFX Mentorship</li>
+                <li><strong>Highest Stipends:</strong> Microsoft RL ($10k), GitHub Octernships ($5-10k), Outreachy ($7k)</li>
+                <li><strong>For Beginners:</strong> Start with MLH Prep (free) → MLH Fellowship → Other programs</li>
+                <li><strong>Indian Students:</strong> Focus on Outreachy, MLH, LFX, and GSoC 2026</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const programsData = [
+            {
+                'Program': 'Google Summer of Code (GSoC)',
+                'Application Period': 'March 24 - April 8, 2025',
+                'Program Duration': 'May 27 - Aug 19, 2025',
+                'Stipend (USD)': '$750 - $3,000 (India rates)',
+                'Status': 'Closed',
+                'Apply Link': 'https://summerofcode.withgoogle.com/',
+                'Notes': 'Applications closed for 2025. Prepare for 2026',
+                'Category': 'Development',
+                'Commitment': '40 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': '45% midterm, 55% completion'
+            },
+            {
+                'Program': 'Google Season of Docs (GSoD)',
+                'Application Period': 'March - April',
+                'Program Duration': 'May - November',
+                'Stipend (USD)': '$5,000 - $15,000',
+                'Status': '2026',
+                'Apply Link': 'https://developers.google.com/season-of-docs',
+                'Notes': 'Technical writing focused',
+                'Category': 'Documentation',
+                'Commitment': '20-40 hours/week',
+                'Eligibility': '18+ years, Technical writers',
+                'Payment Structure': 'Milestone-based'
+            },
+            {
+                'Program': 'MLH Fellowship',
+                'Application Period': 'Open Now',
+                'Program Duration': 'Sept 15 - Dec 6, 2025',
+                'Stipend (USD)': '$5,000',
+                'Status': 'Open',
+                'Apply Link': 'https://fellowship.mlh.io/',
+                'Notes': 'Fall 2025 cohort accepting applications',
+                'Category': 'Development',
+                'Commitment': '40 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': 'End of program'
+            },
+            {
+                'Program': 'MLH Prep Program',
+                'Application Period': 'Rolling',
+                'Program Duration': '3 weeks',
+                'Stipend (USD)': 'Free',
+                'Status': 'Open',
+                'Apply Link': 'https://fellowship.mlh.io/programs/prep',
+                'Notes': 'Great preparation for Fellowship',
+                'Category': 'Preparation',
+                'Commitment': '10-20 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': 'No payment'
+            },
+            {
+                'Program': 'Outreachy',
+                'Application Period': 'Feb 6 - Mar 14, 2025',
+                'Program Duration': 'June 2 - Aug 29, 2025',
+                'Stipend (USD)': '$7,000 + $500 travel',
+                'Status': 'Running',
+                'Apply Link': 'https://www.outreachy.org/',
+                'Notes': 'Current internship running. Next: Dec 2025',
+                'Category': 'Diversity',
+                'Commitment': '30 hours/week',
+                'Eligibility': 'Underrepresented groups',
+                'Payment Structure': 'Monthly installments'
+            },
+            {
+                'Program': 'Hyperledger Foundation',
+                'Application Period': 'Year-round',
+                'Program Duration': '3-6 months',
+                'Stipend (USD)': '$3,000 - $6,000',
+                'Status': 'Open',
+                'Apply Link': 'https://wiki.hyperledger.org/display/INTERN',
+                'Notes': 'Blockchain focused',
+                'Category': 'Blockchain',
+                'Commitment': '20-40 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': 'Monthly installments'
+            },
+            {
+                'Program': 'LFX Mentorship',
+                'Application Period': 'Jan-Feb, Apr-May, Aug-Sep',
+                'Program Duration': '12 weeks',
+                'Stipend (USD)': '$3,000 - $6,000',
+                'Status': 'Fall 2025',
+                'Apply Link': 'https://mentorship.lfx.linuxfoundation.org/',
+                'Notes': '3 cohorts per year',
+                'Category': 'Development',
+                'Commitment': '20-40 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': 'Monthly installments'
+            },
+            {
+                'Program': 'Season of KDE',
+                'Application Period': 'Dec - Jan',
+                'Program Duration': 'Jan - April',
+                'Stipend (USD)': '$1,000 - $3,000',
+                'Status': 'Dec 2025',
+                'Apply Link': 'https://season.kde.org/',
+                'Notes': 'KDE ecosystem projects',
+                'Category': 'Development',
+                'Commitment': '20-40 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': 'Milestone-based'
+            },
+            {
+                'Program': 'FOSSASIA Internship',
+                'Application Period': 'Year-round',
+                'Program Duration': '2-6 months',
+                'Stipend (USD)': '$500 - $2,000',
+                'Status': 'Open',
+                'Apply Link': 'https://fossasiataipei.github.io/fossasia-internship-program/',
+                'Notes': 'Some programs unpaid',
+                'Category': 'Development',
+                'Commitment': '20-40 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': 'End of program'
+            },
+            {
+                'Program': 'Summer of Haskell',
+                'Application Period': 'Feb - March',
+                'Program Duration': 'June - Sept',
+                'Stipend (USD)': '$3,000 - $6,000',
+                'Status': '2026',
+                'Apply Link': 'https://summer.haskell.org/',
+                'Notes': 'Haskell programming language',
+                'Category': 'Development',
+                'Commitment': '40 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': 'Monthly installments'
+            },
+            {
+                'Program': 'Cross (OSRE)',
+                'Application Period': 'Jan - March',
+                'Program Duration': 'June - Sept',
+                'Stipend (USD)': '$6,000 - $8,000',
+                'Status': '2026',
+                'Apply Link': 'https://ucsc-ospo.github.io/osre/',
+                'Notes': 'Research-focused',
+                'Category': 'Research',
+                'Commitment': '40 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': 'Monthly installments'
+            },
+            {
+                'Program': 'GitHub Octernships',
+                'Application Period': 'Quarterly',
+                'Program Duration': '8-12 weeks',
+                'Stipend (USD)': '$5,000 - $10,000',
+                'Status': 'Open',
+                'Apply Link': 'https://education.github.com/students/octernships',
+                'Notes': 'Rolling applications',
+                'Category': 'Development',
+                'Commitment': '30-40 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': 'Monthly installments'
+            },
+            {
+                'Program': 'X.Org Foundation',
+                'Application Period': 'March - April',
+                'Program Duration': 'May - August',
+                'Stipend (USD)': '$5,000',
+                'Status': '2026',
+                'Apply Link': 'https://www.x.org/wiki/XorgEVoC/',
+                'Notes': 'Graphics/display systems',
+                'Category': 'Development',
+                'Commitment': '40 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': 'Milestone-based'
+            },
+            {
+                'Program': 'Microsoft RL Open Source Fest',
+                'Application Period': 'Jan - Feb',
+                'Program Duration': 'March - June',
+                'Stipend (USD)': '$10,000',
+                'Status': '2026',
+                'Apply Link': 'https://www.microsoft.com/en-us/research/academic-program/rl-open-source-fest/',
+                'Notes': 'AI/RL focused, highest stipend',
+                'Category': 'AI/Research',
+                'Commitment': '40 hours/week',
+                'Eligibility': '18+ years, Students',
+                'Payment Structure': 'Milestone-based'
+            }
+        ];
+
+        function downloadExcel() {
+            const ws = XLSX.utils.json_to_sheet(programsData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, 'Open Source Programs');
+            
+            // Auto-size columns
+            const colWidths = [];
+            const headers = Object.keys(programsData[0]);
+            headers.forEach(header => {
+                const maxLen = Math.max(
+                    header.length,
+                    ...programsData.map(row => String(row[header]).length)
+                );
+                colWidths.push({ wch: Math.min(maxLen + 2, 50) });
+            });
+            ws['!cols'] = colWidths;
+            
+            XLSX.writeFile(wb, 'Open_Source_Programs_2025.xlsx');
+        }
+    </script>
+</body>
+</html>
